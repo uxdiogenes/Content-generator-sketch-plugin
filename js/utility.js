@@ -25,7 +25,7 @@ var tools = {
 		return normalString;
 	},
 
-	saveFile : function(path,data){		
+	saveFile : function(path,data){
 		var someContent = NSString.stringWithString_(data)
 		var path = path
 		someContent.dataUsingEncoding_(NSUTF8StringEncoding).writeToFile_atomically_(path, true)
@@ -35,7 +35,7 @@ var tools = {
 			var pluginFolder = scriptPath.match(/Plugins\/([\w -])*/)[0] + "/";
 			var sketchPluginsPath = scriptPath.replace(/Plugins([\w \/ -])*.sketchplugin$/, "");
 			return pluginFolder;
-		}		
+		}
 	}
 };
 
@@ -55,5 +55,13 @@ function capitalize(str) {
   return str.slice(0, 1).toUpperCase() + str.slice(1);
 }
 
+function getJSON(url) {
+	var request = NSURLRequest.requestWithURL(NSURL.URLWithString(url));
+	var response = NSURLConnection.sendSynchronousRequest_returningResponse_error(request, null, null);
+	var responseObject = [NSJSONSerialization JSONObjectWithData: response options: nil error: nil];
+	return responseObject;
+}
 
-
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
