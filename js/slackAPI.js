@@ -1,6 +1,3 @@
-// Learn it, love it:
-// https://api.slack.com/methods/users.list/test
-
 var rootURL = "https://slack.com/api/";
 var tokenPath = NSHomeDirectory() + "/.slackToken"
 
@@ -49,19 +46,33 @@ function getUserNames() {
 	return userNames;
 }
 
-function getUserAvatarURLs() {
+function getAvatarURLsByUser(fullsize) {
+	log('getAvatarURLsByUser()');
 	var users = getUsers();
-	if (!users) {
+	if (!users || !users.length) {
 		alert('Unable to load user list from Slack API');
+		throw 'Unable to load user list from Slack API';
 	}
 
-	var urlsByUser = {};
-	users.forEach(function (user) {
-		if (!user.deleted && !user.profile.bot_id) {
-			urlsByUser[user.name] = user.profile.image_original;
+	// users.forEach(function (user) {
+	// 	if (!user.deleted && !user.is_bot) {
+	// 		urls_by_user[user.name] = fullsize ? user.profile.image_original : user.profile.image_192;
+	// 	} else {
+	// 		log('skipping user ', user.name);
+	// 	}
+	// });
+
+	var urls_by_user = {};
+	for (var i = users.count - 1; i >= 0; i--) {
+		user = users[i];
+		if (!user.deleted && !user.is_bot) {
+			urls_by_user[user.name] = fullsize ? user.profile.image_original : user.profile.image_192;
 		}
-	});
-	return urlsByUser;
+	};
+
+	log(users);
+	log(urls_by_user);
+	return urls_by_user;
 }
 
 function getUserIDs() {
@@ -147,4 +158,44 @@ function postFile(path, recipient) {
 	var args = NSArray.arrayWithObjects("-F", "token=" + getActiveToken(), "-F", "file=@" + path, "-F", "channels=" + recipient, "https://slack.com/api/files.upload", nil);
 	task.setArguments(args);
     task.launch();
+}
+
+function cacheProfileImages() {
+  var avatar_urls_by_user = getAvatarURLsByUser();
+  var usernames = Object.keys(avatar_urls_by_user);
+
+	var image_dict = NSMutableDictionary.alloc().init();
+
+  usernames.some(function (username, index) {
+    var url = avatar_urls_by_user[username];
+    var image = NSImage.alloc().initWithContentsOfURL(url);
+
+    [image_dict setObject:image forKey:username];
+
+    if (index >= 100) {
+    	return true;
+    } else {
+    	return false;
+    }
+  });
+
+  log(image_dict);
+  if (!image_dict.count) {
+  	var error_message = 'No image files loaded.'
+  	alert(error_message);
+  	throw error_message;
+  }
+
+  var this_plugin_root_path = tools.getPluginRootPath();
+  var images_path = this_plugin_root_path + 'data/photos/persona/slack/';
+  log('images_path: ' + images_path);
+
+  try {
+  	[image_dict writeToFile:images_path atomically:true]
+  	[doc showMessage: 'Saved all Slack team avatars to disk.'];
+  } catch (e) {
+  	alert('Unable to save Slack team avatars to disk.')
+  	throw e;
+  }
+
 }

@@ -1,4 +1,4 @@
-#import 'utility.js'
-#import 'slackAPI.js'
+#import '../js/utility.js'
+#import '../js/slackAPI.js'
 
 requestAndSaveToken()

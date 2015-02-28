@@ -1,4 +1,5 @@
 #import '../js/utility.js'
+#import '../js/slackAPI.js'
 #import '../js/loadImageSlack.js'
 
-loadImagesSlack()
+loadImageSlack()

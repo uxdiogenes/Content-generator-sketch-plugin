@@ -1,31 +1,23 @@
-#import 'utility.js'
-#import 'slackAPI.js'
+var loadImageSlack = function(){
 
-var loadImagesSlack = function(){
-  // function cacheAvatarImages() {
-
-  // }
-
-	function loadImagesSlack(imgAmount){
-
-
-
-		var imagesCollection = [],
+  function loadImagesSlack(num_images){
+    var imagesCollection = [],
 			  fileManager = [NSFileManager defaultManager];
 
 		if(tools.majorVersion() == 3){
 			var scriptPath = sketch.scriptPath;
 			var pluginFolder = scriptPath.match(/Plugins\/([\w -])*/)[0] + "/";
 			var sketchPluginsPath = scriptPath.replace(/Plugins([\w \/ -])*.sketchplugin$/, "");
-			imagesPath =  sketchPluginsPath + pluginFolder + dataPath;
+			imagesPath = sketchPluginsPath + pluginFolder + 'persona/slack/';
 		}
+
 		log(imagesPath)
 		var imagesFileNames = [fileManager contentsOfDirectoryAtPath:imagesPath error:nil],
 			imgLen = [imagesFileNames count];
 
-		for(var i = 0; i < imgAmount; i++){
-			var r = Math.floor(Math.random() * imgLen);
-			var fileName = imagesPath+imagesFileNames[r];
+		for(var i = 0; i < num_images; i++){
+      var rand_int = getRandomInt(0, imgLen - 1)
+			var fileName = imagesPath+imagesFileNames[rand_int];
 			if ([fileManager fileExistsAtPath: fileName]) {
 				var newImage = [[NSImage alloc] initWithContentsOfFile:fileName];
 				imagesCollection.push(newImage);
