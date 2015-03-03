@@ -54,6 +54,7 @@ function getAvatarURLsByUser(fullsize) {
 		throw 'Unable to load user list from Slack API';
 	}
 
+  // this version of JS doesn't do Array.prototype.forEach, apparently
 	// users.forEach(function (user) {
 	// 	if (!user.deleted && !user.is_bot) {
 	// 		urls_by_user[user.name] = fullsize ? user.profile.image_original : user.profile.image_192;
@@ -63,15 +64,16 @@ function getAvatarURLsByUser(fullsize) {
 	// });
 
 	var urls_by_user = {};
-	for (var i = users.count - 1; i >= 0; i--) {
+  // Why array.count() instead of .length? I HAVE NO IDEA BUT IT WORKS
+	for (var i = users.count() - 1; i >= 0; i--) {
 		user = users[i];
-		if (!user.deleted && !user.is_bot) {
+    // Goddamn it what are the rules of this environment?!
+		//if (!user.deleted && !user.is_bot) { these don't evaluate to true when = to 0 apparently.
+    if (user.deleted === 0 && user.is_bot === 0) {
 			urls_by_user[user.name] = fullsize ? user.profile.image_original : user.profile.image_192;
-		}
+    }
 	};
 
-	log(users);
-	log(urls_by_user);
 	return urls_by_user;
 }
 
