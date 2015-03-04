@@ -47,7 +47,6 @@ function getUserNames() {
 }
 
 function getAvatarURLsByUser(fullsize) {
-	log('getAvatarURLsByUser()');
 	var users = getUsers();
 	if (!users || !users.length) {
 		alert('Unable to load user list from Slack API');
@@ -69,8 +68,9 @@ function getAvatarURLsByUser(fullsize) {
 		user = users[i];
     // Goddamn it what are the rules of this environment?!
 		//if (!user.deleted && !user.is_bot) { these don't evaluate to true when = to 0 apparently.
-    if (user.deleted === 0 && user.is_bot === 0) {
+    if (user.deleted == 0 && user.is_bot == 0) {
 			urls_by_user[user.name] = fullsize ? user.profile.image_original : user.profile.image_192;
+      //urls_by_user[user.name] = user.profile.image_192;
     }
 	};
 
@@ -181,7 +181,6 @@ function cacheProfileImages() {
     }
   });
 
-  log(image_dict);
   if (!image_dict.count) {
   	var error_message = 'No image files loaded.'
   	alert(error_message);
